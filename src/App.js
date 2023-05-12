@@ -12,8 +12,9 @@ function App() {
   const [searchInput, setSearchInput] = useState("");
   const [likedMovies, setLikedMovies] = useState([]);
 
+  const API_KEY = process.env.REACT_APP_API_KEY;
   const getMovies = async (searchInput) => {
-    const url = `http://www.omdbapi.com/?s=${searchInput}&apikey=eaa75831`;
+    const url = `http://www.omdbapi.com/?s=${searchInput}&apikey=${API_KEY}`;
     const response = await fetch(url);
     const responseJson = await response.json();
     if (responseJson.Search) {
@@ -34,25 +35,27 @@ function App() {
   };
 
   const likedClick = (movie) => {
-    if(likedMovies.includes(movie)){
-      alert('This film has already been added');
+    if (likedMovies.includes(movie)) {
+      alert("This film has already been added");
     } else {
-    const updatedLikedMovies = [...likedMovies, movie];
+      const updatedLikedMovies = [...likedMovies, movie];
 
-    setLikedMovies(updatedLikedMovies);
-    saveToLS(updatedLikedMovies);
-  }
+      setLikedMovies(updatedLikedMovies);
+      saveToLS(updatedLikedMovies);
+    }
   };
 
   useEffect(() => {
-    getMovies(searchInput);
+    if (searchInput) {
+      getMovies(searchInput);
+    }
   }, [searchInput]);
 
   useEffect(() => {
     const updatedLikedMovies = JSON.parse(
       localStorage.getItem("react-movie-app-liked")
     );
-    setLikedMovies(updatedLikedMovies);
+    if(updatedLikedMovies){setLikedMovies(updatedLikedMovies)};
   }, []);
 
   return (
