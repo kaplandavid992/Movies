@@ -7,8 +7,11 @@ const Movies = (props) => {
       {props.movies.map((movie) => (
         <div className="image-container d-flex justify-content-start m-3">
           <img src={movie.Poster} alt={`poster of ${movie.Poster}`} />
-          <div onClick={() => props.handleLikedClick(movie)} className="overlay dflex align-items-center justify-content-center">
-             <Addliked />
+          <div
+            onClick={() => props.handleLikedClick(movie)}
+            className="overlay dflex align-items-center justify-content-center"
+          >
+            <Addliked />
           </div>
         </div>
       ))}
@@ -17,4 +20,3 @@ const Movies = (props) => {
 };
 
 export default Movies;
-

@@ -5,7 +5,13 @@ export default function Search(props) {
         className="form-control"
         placeholder="Search Movies"
         value={props.value}
-        onChange={(e) => props.setSearchInput(e.target.value)}
+        onChange={(e) => 
+                    {
+                      props.setPage(1);
+                      props.setMovies([]);
+                      props.setSearchInput(e.target.value);
+                    }
+                  }
       />
     </div>
   );

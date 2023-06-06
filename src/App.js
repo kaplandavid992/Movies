@@ -11,15 +11,25 @@ function App() {
   const [movies, setMovies] = useState([]);
   const [searchInput, setSearchInput] = useState("");
   const [likedMovies, setLikedMovies] = useState([]);
-
+  const [page, setPage] = useState(1);
+  const [showPressed, setShowPressed] = useState(false);
+  let vis = movies.length > 0 ? 'visible' : 'invisible';
+ 
+  
   const API_KEY = process.env.REACT_APP_API_KEY;
   const getMovies = async (searchInput) => {
-    const url = `http://www.omdbapi.com/?s=${searchInput}&apikey=${API_KEY}`;
+    const url = `https://www.omdbapi.com/?s=${searchInput}&page=${page}&apikey=${API_KEY}`;
     const response = await fetch(url);
     const responseJson = await response.json();
-    if (responseJson.Search) {
-      setMovies(responseJson.Search);
+   
+    if (responseJson.Search && !showPressed) {
+      
+      setMovies((prevMovies) => [...prevMovies, ...responseJson.Search]);
+    } 
+      else if (responseJson.Search === undefined && showPressed){        
+        alert('no more pages for current search input');
     }
+    setShowPressed(false);
   };
 
   const saveToLS = (items) => {
@@ -39,31 +49,53 @@ function App() {
       alert("This film has already been added");
     } else {
       const updatedLikedMovies = [...likedMovies, movie];
-
       setLikedMovies(updatedLikedMovies);
       saveToLS(updatedLikedMovies);
     }
+  };
+
+  const showMore = () => {
+    setShowPressed(true);
+    setPage(page + 1);
   };
 
   useEffect(() => {
     if (searchInput) {
       getMovies(searchInput);
     }
-  }, [searchInput]);
+  }, [page, showPressed, searchInput]);
 
   useEffect(() => {
     const updatedLikedMovies = JSON.parse(
       localStorage.getItem("react-movie-app-liked")
     );
-    if(updatedLikedMovies){setLikedMovies(updatedLikedMovies)};
+    if (updatedLikedMovies) {
+      setLikedMovies(updatedLikedMovies);
+    }
   }, []);
 
+  useEffect(() => {
+    vis = movies.length === 0 ? 'invisible' : 'visible';
+  }, [movies]);
+
   return (
+    <>
     <div className="container-fluid overflow">
       <div className="row d-flex align-items-center mt-4 mb-4">
         <MoviesHeading heading={"Movies"} />
-        <Search searchInput={searchInput} setSearchInput={setSearchInput} />
+        <Search
+          searchInput={searchInput}
+          setSearchInput={setSearchInput}
+          setPage={setPage}
+          setMovies={setMovies}
+        />
       </div>
+  <div className="d-flex justify-content-center m-3">
+    <btn className={`btn btn-dark p-3 ${vis}`} onClick={showMore}>
+      Show More
+    </btn>
+  </div>
+
       <div className="row">
         <Movies
           movies={movies}
@@ -75,6 +107,7 @@ function App() {
       <div className="row d-flex align-items-center mt-4 mb-4">
         <MoviesHeading heading={"Liked Films"} />
       </div>
+
       <div className="row">
         <Movies
           movies={likedMovies}
@@ -83,6 +116,7 @@ function App() {
         />
       </div>
     </div>
+  </>
   );
 }
 
