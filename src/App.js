@@ -14,7 +14,6 @@ function App() {
   const [page, setPage] = useState(1);
   const [showPressed, setShowPressed] = useState(false);
   let vis = movies.length > 0 ? 'visible' : 'invisible';
- 
   
   const API_KEY = process.env.REACT_APP_API_KEY;
   const getMovies = async (searchInput) => {
@@ -23,7 +22,6 @@ function App() {
     const responseJson = await response.json();
    
     if (responseJson.Search && !showPressed) {
-      
       setMovies((prevMovies) => [...prevMovies, ...responseJson.Search]);
     } 
       else if (responseJson.Search === undefined && showPressed){        
